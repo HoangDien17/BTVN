@@ -1,14 +1,16 @@
 const express = require('express');
 require('dotenv').config();
+
 const db = require('./models');
 const app = express();
+const router = require('./routes');
+
 const PORT = process.env.PORT || 3000
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.get('/', (req, res) => {
-  res.send('Hello world!')
-})
+//router
+router(app);
 
 db.sequelize.sync()
 .then(() => {
