@@ -1,12 +1,15 @@
 module.exports = (sequelize, DataTypes) => {
   const Loan = sequelize.define("Loan", {
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     status: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    quantity: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+    description: {
+      type: DataTypes.STRING
     }
   })
   Loan.associate = models => {
