@@ -36,22 +36,32 @@ let apiGetAllLoan = async () => {
 
 let apiTraSach = async (UserId, BookId, data) => {
   // Trả sách
-  let presentLoan = await db.Loan.findOne({where: {
-    [Op.and]: [{UserId: UserId}, {BookId: BookId}]
-  }});
-  let presentBook = await db.Book.findOne({where: {id: BookId}});
-  if(presentLoan) {
-    if(presentLoan.quantity > data.quantity) {
-      await db.Loan.update({quantity: (presentLoan.quantity - data.quantity)}, {where: {[Op.and]: [{UserId: UserId}, {BookId: BookId}]}});
-      await db.Book.update({quantity: (presentBook.quantity + data.quantity)}, {where: {id: BookId}});
-      return { message: `Còn lại ${presentLoan.quantity-data.quantity} quyển sách ${presentBook.nameBook} chưa trả lại.`};
+  try {
+    let presentLoan = await db.Loan.findOne({
+      where: {
+        [Op.and]: [{ UserId: UserId }, { BookId: BookId }]
+      }
+    });
+    let presentBook = await db.Book.findOne({ where: { id: BookId } });
+    if (presentLoan) {
+      if (presentLoan.quantity > data.quantity) {
+        await Promise.all([
+          db.Loan.update({ quantity: (presentLoan.quantity - data.quantity) }, { where: { [Op.and]: [{ UserId: UserId }, { BookId: BookId }] } }),
+          db.Book.update({ quantity: (presentBook.quantity + data.quantity) }, { where: { id: BookId } })
+        ])
+        return { message: `Còn lại ${presentLoan.quantity - data.quantity} quyển sách ${presentBook.nameBook} chưa trả lại.` };
+      }
+      await Promise.all([
+        db.Book.update({ quantity: (presentBook.quantity + data.quantity) }, { where: { id: BookId } }),
+        db.Loan.destroy({ where: { [Op.and]: [{ UserId: UserId }, { BookId: BookId }] } })
+      ]);
+      return { message: "Đã trả hết sách." }
     }
-    await db.Book.update({quantity: (presentBook.quantity + data.quantity)}, {where: {id: BookId}});
-    await db.Loan.destroy({where: {[Op.and]: [{UserId: UserId}, {BookId: BookId}]}});
-    return { message: "Đã trả hết sách."}
+    let user = await db.User.findOne({ where: { id: UserId } })
+    return { message: `Không tồn tại thông tin mượn sách của người dùng - ${user.username} -` }
+  } catch (error) {
+    throw error;
   }
-  let user = await db.User.findOne({where: {id: UserId}})
-  return { message: `Không tồn tại thông tin mượn sách của người dùng - ${user.username} -`}
 }
 
 module.exports = { apiCreateLoan, apiGetAllLoan, apiTraSach }

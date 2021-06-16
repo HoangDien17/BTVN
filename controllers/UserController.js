@@ -7,19 +7,16 @@ let apiCreateUser = async (req, res) => {
     if (validationErrors.isEmpty()) {
       let { username, password} = req.body;
       let addUser = await UserService.apiCreateUser(username, password);
-      res.status(200).json(addUser);
+      res.status(201).json(addUser);
     }
     else {
       let errors = Object.values(validationErrors.mapped());
       let arrError = [];
-      errors.forEach(item => {
-        arrError.push(item.msg)
-      })
-      console.log(arrError);
-      throw new Error(arrError);
+      arrError = errors.map(item=>item.msg)
+      res.status(400).json(arrError);
     }
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json(error);
   }
 };
 
