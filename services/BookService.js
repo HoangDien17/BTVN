@@ -19,9 +19,10 @@ let apiCreateBook = async (data) => {
   return { message: "Thêm cuốn sách mới thành công.", createBook }
 };
 
-let apiGetAllBook = async () => {
+let apiGetAllBook = async (page) => {
   try {
-    let getAllBook = await db.Book.findAll({});
+    let limit = 2
+    let getAllBook = await db.Book.findAll({limit: limit, offset: limit * page});
     return { getAllBook };
   } catch (error) {
     throw error;

@@ -11,12 +11,12 @@ let apiCreateBook = async (req, res) => {
 
 let apiGetAllBook = async (req, res) => {
   try {
-    let limit = req.params.limit;
     let page = req.query.page;
-    let getAllBook = await BookService.apiGetAllBook({limit: limit, offset: page});
+    let getAllBook = await BookService.apiGetAllBook(page);
     res.status(200).json(getAllBook);
   } catch (error) {
     res.status(500).json(error.message);
+    console.log(error);
   }
 }
 

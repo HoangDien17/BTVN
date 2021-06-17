@@ -31,9 +31,9 @@ let apiLoginUser = async (username, password) => {
         throw new Error("Password nhập chưa chính xác.");
       }
       else {
-        let tokenAccess = jwt.sign({username}, process.env.ACCESS_TEXT_SECRET, {expiresIn: `${process.env.ACCESS_TOKEN_LIFE}`});
+        let tokenAccess = jwt.sign({ username }, process.env.ACCESS_TEXT_SECRET, { expiresIn: `${process.env.ACCESS_TOKEN_LIFE}` });
         console.log(tokenAccess);
-        return { message: "Đăng nhập thành công.", tokenAccess, user};
+        return { message: "Đăng nhập thành công.", tokenAccess, user };
       }
     }
   } catch (error) {
@@ -42,8 +42,8 @@ let apiLoginUser = async (username, password) => {
 }
 
 let apiUpdateUser = async (username, newPassword) => {
-  let user = await db.User.findOne({ where: {username: username}});
-  if(!user) {
+  let user = await db.User.findOne({ where: { username: username } });
+  if (!user) {
     throw new Error("Tài khoản không tồn tại.");
   }
   else {
@@ -52,20 +52,20 @@ let apiUpdateUser = async (username, newPassword) => {
         password: newPassword
       },
       {
-        where: {username: username}
+        where: { username: username }
       })
-      return {
-        message: "Cập nhật mật khẩu thành công.",
-        userUpdate
-      }
+    return {
+      message: "Cập nhật mật khẩu thành công.",
+      userUpdate
+    }
   }
 }
 
 let apiDeleteUser = async (confirmId) => {
   try {
-    let checkDeleteUser = await db.User.destroy({ where: {id: confirmId}});
-    if(checkDeleteUser === 1) {
-      return {message: "Xóa tài khoản thành công.", checkDeleteUser};
+    let checkDeleteUser = await db.User.destroy({ where: { id: confirmId } });
+    if (checkDeleteUser === 1) {
+      return { message: "Xóa tài khoản thành công.", checkDeleteUser };
     }
     throw new Error("Tài khoản đã bị xóa ra khỏi hệ thống.")
   } catch (error) {
@@ -73,9 +73,14 @@ let apiDeleteUser = async (confirmId) => {
   }
 }
 
-let apiGetAllUser = async (limit) => {
-  let getAllUser = await db.User.findAll({limit: limit});
-  return {getAllUser};
+let apiGetAllUser = async (page) => {
+  try {
+    let limit = 2;
+    let getAllUser = await db.User.findAll({ limit: limit, offset: limit * page });
+    return { getAllUser };
+  } catch (error) {
+    throw error
+  }
 }
 
 

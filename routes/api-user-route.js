@@ -10,6 +10,6 @@ module.exports = (fix) => {
   router.post("/", Validation.register, UserController.apiCreateUser);
   router.delete("/:id", UserController.apiDeleteUser);
   router.put("/", UserController.apiUpdateUser);
-  router.get("/:limit?page", UserController.apiGetAllUser);
+  router.get("/", UserController.apiGetAllUser);
 }
 
