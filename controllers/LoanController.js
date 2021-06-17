@@ -22,7 +22,6 @@ let apiTraSach = async (req, res) => {
   try {
     let UserId = req.params.Uid;
     let BookId = req.params.Bid;
-    console.log(UserId, BookId)
     let result = await LoanService.apiTraSach(UserId, BookId, req.body);
     res.status(200).json(result);
   } catch (error) {

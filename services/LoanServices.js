@@ -38,21 +38,20 @@ let apiTraSach = async (UserId, BookId, data) => {
   // Trả sách
   try {
     let presentLoan = await db.Loan.findOne({
-      where: {
-        [Op.and]: [{ UserId: UserId }, { BookId: BookId }]
-      }
+      where: { [Op.and]: [{ UserId: UserId }, { BookId: BookId }] },
+      include: [{ model: db.User, where: { id: UserId } }, { model: db.Book, where: { id: BookId}}]
     });
-    let presentBook = await db.Book.findOne({ where: { id: BookId } });
     if (presentLoan) {
+      let bookQuantity = presentLoan.Book.quantity;
       if (presentLoan.quantity > data.quantity) {
         await Promise.all([
           db.Loan.update({ quantity: (presentLoan.quantity - data.quantity) }, { where: { [Op.and]: [{ UserId: UserId }, { BookId: BookId }] } }),
-          db.Book.update({ quantity: (presentBook.quantity + data.quantity) }, { where: { id: BookId } })
+          db.Book.update({ quantity: (bookQuantity + data.quantity) }, { where: { id: BookId } })
         ])
-        return { message: `Còn lại ${presentLoan.quantity - data.quantity} quyển sách ${presentBook.nameBook} chưa trả lại.` };
+        return { message: `Còn lại ${presentLoan.quantity - data.quantity} quyển sách - ${presentLoan.Book.nameBook} - chưa trả lại.` };
       }
       await Promise.all([
-        db.Book.update({ quantity: (presentBook.quantity + data.quantity) }, { where: { id: BookId } }),
+        db.Book.update({ quantity: (bookQuantity + data.quantity) }, { where: { id: BookId } }),
         db.Loan.destroy({ where: { [Op.and]: [{ UserId: UserId }, { BookId: BookId }] } })
       ]);
       return { message: "Đã trả hết sách." }
