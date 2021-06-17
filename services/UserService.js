@@ -73,5 +73,10 @@ let apiDeleteUser = async (confirmId) => {
   }
 }
 
+let apiGetAllUser = async (limit) => {
+  let getAllUser = await db.User.findAll({limit: limit});
+  return {getAllUser};
+}
 
-module.exports = { apiCreateUser, apiLoginUser, apiUpdateUser, apiDeleteUser }
+
+module.exports = { apiCreateUser, apiLoginUser, apiUpdateUser, apiDeleteUser, apiGetAllUser }

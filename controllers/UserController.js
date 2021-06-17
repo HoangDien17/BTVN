@@ -54,4 +54,15 @@ let apiDeleteUser = async (req, res) => {
   }
 }
 
-module.exports = { apiCreateUser, apiLoginUser, apiUpdateUser, apiDeleteUser };
+let apiGetAllUser = async (req, res) => {
+  try {
+    let limit = req.params.limit;
+    let page = req.query.page;
+    let getAllUser = await UserService.apiGetAllUser({limit: limit, offset: page});
+    res.status(200).json(getAllUser);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+}
+
+module.exports = { apiCreateUser, apiLoginUser, apiUpdateUser, apiDeleteUser, apiGetAllUser };
